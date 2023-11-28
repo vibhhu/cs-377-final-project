@@ -12,6 +12,16 @@ int main() {
       shell->parse_command(cmd, cmdTokens);
       if (shell->isQuit(*cmdTokens)) {
         exit(0);
+      } else if (shell->isChangeDir(cmdTokens)) {
+        if (strcmp(cmdTokens[0], "cd") == 0) {
+          if (chdir(cmdTokens[1]) == 0) {
+            cout << "Successfully changed directory to: " << cmdTokens[1] << endl;
+          } else {
+            cout << "The specified directory does not exist." << endl; 
+          }
+        } else {
+          cout << "Please specify a directory" << endl;
+        }
       } else {
         shell->exec_command(cmdTokens);
       }
