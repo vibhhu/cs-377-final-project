@@ -123,3 +123,7 @@ bool simple_shell::isQuit(char* cmd) {
     // TODO: check for the command "quit" that terminates the shell
     return strcmp(cmd, "quit") == 0;
 }
+
+bool simple_shell::isChangeDir(char** argv) {
+    return strcmp(argv[0], "cd") == 0;
+}
