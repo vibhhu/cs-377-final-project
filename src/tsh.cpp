@@ -54,69 +54,95 @@ void simple_shell::parse_command(char* cmd, char** cmdTokens) {
     cmdTokens[index] = NULL;
 }
 
-void simple_shell::exec_command(char** argv) {
+void simple_shell::exec_command(char** allArgv) {
     // TODO: fork a child process to execute the command.
     // parent process should wait for the child process to complete and reap it
-    
-    int pid = fork();
-    if (pid < 0) {
-        std::cerr << "Error during forking" << std::endl;
+    char* command[25][25];
+    char** argv;
+    int curToken = 0;
+    int cntCommand = 0;
+    while(allArgv[curToken] != NULL) {
+        int index = 0;
+        while (allArgv[curToken] != NULL && strcmp(allArgv[curToken], "|") != 0) {
+            command[cntCommand][index] = allArgv[curToken];
+            index++;
+            curToken++;
+        }
+        command[cntCommand][index] = NULL;
+        if (allArgv[curToken] != NULL) curToken++; //skip "|"
+        cntCommand++;
     }
 
-    else if (pid == 0) {
+    int fd[cntCommand][2];
+    int pids[cntCommand];
+    for (int pipe_index = 0; pipe_index < cntCommand; pipe_index++) {
+        if (pipe(fd[pipe_index]) < 0) {
+            cout << "error create pipe " << pipe_index << endl;
+            exit(1);
+        }
+    }
 
-        if (strcmp(argv[0], "echo") == 0) {
-            int i = 1;
-            while (argv[i] != NULL) {
-                cout << argv[i] << " ";
-                i++;
-            }
-            cout << endl;
-            exit(0);
-            
+    for (int command_index = 0; command_index < cntCommand; ++command_index) {
+        argv = command[command_index];
+        int pid = fork();
+        if (pid < 0) {
+            std::cerr << "Error during forking" << std::endl;
         }
 
-        else if (strcmp(argv[0], "pwd") == 0) {
-            char cwd[1024];
-            if (getcwd(cwd, sizeof(cwd)) == NULL) {
-                cout << "Error while calling cwd" << endl;
-                exit(1);
+        else if (pid == 0) {
+            if (command_index > 0) {//the first command will not read from pipe
+                dup2(fd[command_index - 1][0], STDIN_FILENO);
             }
+            if (command_index + 1 < cntCommand) {//the last command will not write to pipe
+                dup2(fd[command_index][1], STDOUT_FILENO);
+            }
+            for (int i = 0; i < cntCommand; ++i) {
+                close(fd[i][0]);
+                close(fd[i][1]);
+            }
+
+            if (strcmp(argv[0], "echo") == 0) {
+                int i = 1;
+                while (argv[i] != NULL) {
+                    cout << argv[i] << " ";
+                    i++;
+                }
+                cout << endl;
+                exit(0);
+            }
+            
+            else if (strcmp(argv[0], "pwd") == 0) {
+                char cwd[1024];
+                if (getcwd(cwd, sizeof(cwd)) == NULL) {
+                    cout << "Error while calling cwd" << endl;
+                    exit(1);
+                }
             else {
                 cout << cwd << endl;
                 exit(0);
-            }
-        }
-
-        else if (strcmp(argv[0], "cd") == 0) {
-            if (argv[1] != NULL) {
-                if (chdir(argv[1]) == 0) {
-                    cout << "Successfully changed directory to: " << argv[1] << endl;
-                    exit(0);
-                }
-                else {
-                    cout << "The specified directory does not exist." << endl;
-                    exit(1);
                 }
             }
             else {
-                cout << "Please specify a directory" << endl;
-                exit(1);
+                int exec = execvp(argv[0], argv);
+                if (exec == -1) {
+                    std::cerr << "Error during command execution" << std::endl;
+                }
             }
         }
-        
+
         else {
-            int exec = execvp(argv[0], argv);
-            if (exec == -1) {
-                std::cerr << "Error during command execution" << std::endl;
-            }
+            pids[command_index] = pid;
         }
     }
 
-    else {
-        waitpid(pid, NULL, 0);
+    for (int i = 0; i < cntCommand; i++) {
+        close(fd[i][0]);
+        close(fd[i][1]);
     }
-    
+
+    for (int i = 0; i < cntCommand; i++) {
+        waitpid(pids[i], NULL, 0);
+    }
 }
 
 bool simple_shell::isQuit(char* cmd) {
