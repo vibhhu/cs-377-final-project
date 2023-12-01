@@ -118,8 +118,7 @@ void simple_shell::exec_command(char** allArgv) {
                 exit(0);
             }
             
-            else 
-            if (strcmp(argv[0], "pwd") == 0) {
+            else if (strcmp(argv[0], "pwd") == 0) {
                 char cwd[1024];
                 if (getcwd(cwd, sizeof(cwd)) == NULL) {
                     cout << "Error while calling cwd" << endl;
