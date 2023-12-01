@@ -4,6 +4,13 @@
 
 using namespace std;
 
+char *builtin_cmds[] = {
+  "echo",
+  "pwd",
+  "help",
+  "quit"
+};
+const int num_builtin = 4;
 
 void remove_extra_spaces(char* cmd) {
     
@@ -111,7 +118,8 @@ void simple_shell::exec_command(char** allArgv) {
                 exit(0);
             }
             
-            else if (strcmp(argv[0], "pwd") == 0) {
+            else 
+            if (strcmp(argv[0], "pwd") == 0) {
                 char cwd[1024];
                 if (getcwd(cwd, sizeof(cwd)) == NULL) {
                     cout << "Error while calling cwd" << endl;
@@ -121,6 +129,26 @@ void simple_shell::exec_command(char** allArgv) {
                 cout << cwd << endl;
                 exit(0);
                 }
+            }
+            else if (strcmp(argv[0], "help") == 0) {
+                if(argv[1] == NULL) {
+                    printf("Simple Shell:\n");
+                    printf("Type command and arguments then hit enter to run\n");
+                    printf("Built in commands:");
+                    for(int i = 0; i < num_builtin; i++) {
+                        printf(" %s\n", builtin_cmds[i]);
+                    }
+                }
+                else if ((strcmp(argv[1], "echo") == 0)) {
+                    printf("builtin command \"echo\": outputs the arguments\n");
+                }
+                else if ((strcmp(argv[1], "pwd") == 0)) {
+                    printf("builtin command \"pwd\": outputs the path\n");
+                }
+                else if ((strcmp(argv[1], "quit") == 0)) {
+                    printf("builtin command \"quit\": quit the shell\n");
+                }
+                exit(0);
             }
             else {
                 int exec = execvp(argv[0], argv);
