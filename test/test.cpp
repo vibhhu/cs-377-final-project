@@ -20,6 +20,58 @@ TEST(ShellTest, Test1) {
   EXPECT_TRUE(s.isQuit((char*)"quit"));
 }
 
+//displays the present working directory.
+TEST(ShellTest, Test2) {
+  char cmd[81] ="pwd";
+  char *cmdTokens[25];
+  
+  simple_shell s;
+  s.parse_command(cmd,cmdTokens);
+  s.exec_command(cmdTokens);
+}
+
+//print a string of text, or value of a variable to the terminal
+TEST(ShellTest, Test3) {
+  char cmd[81] ="echo Hello bash \n test output!";
+  char *cmdTokens[25];
+  
+  simple_shell s;
+  s.parse_command(cmd,cmdTokens);
+  s.exec_command(cmdTokens);
+}
+
+//bash for any command
+//here we are create a directory.
+TEST(ShellTest, Test4) {
+  simple_shell s;
+  char cmd[81] ="mkdir test_temp";
+  char *cmdTokens[25];
+  s.parse_command(cmd,cmdTokens);
+  s.exec_command(cmdTokens);
+}
+
+
+TEST(ShellTest, Test5) {
+  simple_shell s;
+  
+  char cmd[81] ="ps -l | mkdir test_temp | ls -l | echo print something | ls -l";
+  char *cmdTokens[25];
+  
+    s.parse_command(cmd,cmdTokens);
+    
+    cout << "print cmd tokens : " ;
+    
+    for (int i = 0; i < strlen((*cmdTokens)); i++)
+    {
+        cout << cmdTokens[i];
+    }
+    
+    cout <<" " << endl;
+
+  s.exec_command(cmdTokens);
+}
+
+
 
 int main(int argc, char** argv) {
   testing::InitGoogleTest(&argc, argv);
