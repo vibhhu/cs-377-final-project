@@ -16,24 +16,15 @@ In this project, we have implemented a shell using C++ using system calls and pr
 ## Project Structure
 
 
--   **include**: This is where we keep  [C/C++ header filesLinks to an external site.](https://flaviocopes.com/c-header-files/). Header files are used in C/C++ to share definitions across many C/C++ source files.
--   **lib**: This is where we keep any libraries that we might use. It will often be empty.
--   **obj**: This folder is used for  [object filesLinks to an external site.](http://t.ly/LiKq)  that are generated from the C compilation process. This folder is initially empty until you compile your code.
--   **src**: This is the source folder where all code you are submitting must go. You can change anything you want in this folder (unless otherwise specified in the problem description and in the code we provide), you can add new files, etc.
--   **test**: This is the test folder where you can find all of the public unit tests - if any are given.
--   **Makefile**  - this is a "build" file. This file is used to compile your code.
-
-
-
-
-
-
-Hi! I'm your first Markdown file in **StackEdit**. If you want to learn about StackEdit, you can read me. If you want to play with Markdown, you can edit me. Once you have finished with me, you can create new files by opening the **file explorer** on the left corner of the navigation bar.
-
+-   **include**: This is where we keep the header files.
+-   **obj**: This folder is used for  object files that are generated from the C compilation process.
+-   **src**: This is the source folder where all the source code is.
+-   **test**: This is the test folder where all the tests are.
+-   **Makefile**  - this is a "build" file. This file is used to compile the code.
 
 # Tests
 
-- Test 1 is the test from project 2.
+- Test 1 is the test from project 2. It checks if the user wants to quit the shell.
 - Test 2 test commands "pwd", to display the present working directory. 
 - Test 3 test commands "echo", to print a string of text or value of a variable to the terminal. 
 - Test 4 is our free command execution. It is able to execute any command under user privilege. Here we use "mkdir" make directory ot test this command.
